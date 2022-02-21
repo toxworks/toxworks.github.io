@@ -1,4 +1,4 @@
-![img1_4dorm final_fisheye A](/toxworks.github.io/docs/assets/images/img1_4dorm final_fisheye A.png)
+![img1_4dorm final_fisheye A](/assets/images/img1_4dorm final_fisheye A.png)
 
 ## Welcome to GitHub Pages
 
