@@ -209,7 +209,7 @@ input, select, textarea {
 		}
 
 	
-/*	a {
+	a {
 		-moz-transition: color 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
 		-webkit-transition: color 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
 		-ms-transition: color 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
@@ -218,7 +218,7 @@ input, select, textarea {
 		color: #34a58e;
 		text-decoration: none;
 		
-	}*/
+	}
 
 	/* network icons hover coler */
 	a:hover {
@@ -406,7 +406,7 @@ input, select, textarea {
 		}
 
 /* List */
-/*
+
 	ol {
 		list-style: decimal;
 		margin: 0 0 2em 0;
@@ -454,10 +454,10 @@ input, select, textarea {
 
 		dl dd {
 			margin-left: 2em;
-		} */
+		} 
 
 /* Actions */
-/*
+
 	ul.actions {
 		display: -moz-flex;
 		display: -webkit-flex;
@@ -525,7 +525,7 @@ input, select, textarea {
 
 			ul.actions.fit.stacked {
 				width: 100%;
-			} */
+			} 
 
 		
 
