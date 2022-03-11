@@ -2447,6 +2447,13 @@
 			mobile: true
 		});
 	
+	// Gallery: gallery03.
+		_lightboxGallery.init({
+			id: 'gallery03',
+			navigation: false,
+			mobile: true
+		});
+	
 	// Gallery: gallery06.
 		_lightboxGallery.init({
 			id: 'gallery06',
@@ -2469,30 +2476,34 @@
 		});
 	
 	// "On Visible" animations.
-		onvisible.add('#text13', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#text02', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#buttons07', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#buttons06', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#text10', { style: 'tilt-right', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
 		onvisible.add('#text06', { style: 'tilt-right', speed: 2000, intensity: 4, delay: 0, state: true, replay: false });
-		onvisible.add('#icons03', { style: 'tilt-right', speed: 1000, intensity: 6, delay: 0, state: true, replay: false });
-		onvisible.add('#buttons05', { style: 'tilt-right', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
+		onvisible.add('#icons01', { style: 'tilt-left', speed: 2000, intensity: 6, delay: 0, state: true, replay: false });
 		onvisible.add('#video01', { style: 'tilt-left', speed: 1000, intensity: 9, delay: 0, state: true, replay: false });
-		onvisible.add('#divider06', { style: 'tilt-left', speed: 2250, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#buttons03', { style: 'tilt-left', speed: 1875, intensity: 8, delay: 0, state: true, replay: false });
+		onvisible.add('.buttons.style1', { style: 'tilt-right', speed: 2500, intensity: 8, delay: 0, state: true, replay: false });
 		onvisible.add('#gallery02', { style: 'tilt-left', speed: 2000, intensity: 7, delay: 0, state: true, replay: false });
 		onvisible.add('#video05', { style: 'fade-down', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#gallery01', { style: 'fade-up', speed: 3000, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#text08', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#buttons12', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#icons02', { style: 'slide-left', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#buttons10', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#text03', { style: 'fade-down', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
+		onvisible.add('#text11', { style: 'tilt-left', speed: 2000, intensity: 8, delay: 0, state: true, replay: false });
+		onvisible.add('#icons03', { style: 'tilt-right', speed: 1000, intensity: 6, delay: 0, state: true, replay: false });
+		onvisible.add('#gallery03', { style: 'fade-up', speed: 1000, intensity: 10, delay: 0, state: true, replay: false });
+		onvisible.add('#text05', { style: 'fade-down', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
+		onvisible.add('#text16', { style: 'tilt-left', speed: 2000, intensity: 8, delay: 0, state: true, replay: false });
+		onvisible.add('#gallery04', { style: 'fade-up', speed: 1000, intensity: 10, delay: 0, state: true, replay: false });
+		onvisible.add('#text02', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#text14', { style: 'fade-down', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
 		onvisible.add('#text15', { style: 'tilt-right', speed: 2000, intensity: 4, delay: 0, state: true, replay: false });
-		onvisible.add('#gallery06', { style: 'fade-up', speed: 1000, intensity: 10, delay: 0, state: true, replay: false });
+		onvisible.add('#image01', { style: 'fade-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#video06', { style: 'fade-down', speed: 500, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#gallery08', { style: 'slide-left', speed: 625, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#text16', { style: 'tilt-right', speed: 2000, intensity: 4, delay: 0, state: true, replay: false });
 		onvisible.add('#text07', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#text04', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#text01', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#gallery03', { style: 'fade-up', speed: 1000, intensity: 10, delay: 0, state: true, replay: false });
 
 })();
