@@ -417,7 +417,7 @@
 	
 				setTimeout(function() {
 					$body.className = $body.className.replace(/\bis-playing\b/, 'is-ready');
-				}, 750);
+				}, 0);
 			}, 100);
 		});
 	
@@ -476,7 +476,28 @@
 					location.href = '#' + section.id.replace(/-section$/, '');
 	
 				},
-				sections = {};
+				doEvent = function(id, type) {
+	
+					var name = id.split(/-[a-z]+$/)[0], i;
+	
+					if (name in sections
+					&&	'events' in sections[name]
+					&&	type in sections[name].events)
+						for (i in sections[name].events[type])
+							(sections[name].events[type][i])();
+	
+				},
+				sections = {
+					'home': {
+						events: {
+							onopen: [
+								function() { 
+									history.replaceState('', document.title, window.location.origin + window.location.pathname + window.location.search);
+								},
+							],
+						},
+					},
+				};
 	
 			// Expose doNext, doPrevious, doFirst, doLast.
 				window._next = doNext;
@@ -598,6 +619,9 @@
 	
 					// Activate initial section.
 						initialSection.classList.add('active');
+	
+						// Event: On Open.
+							doEvent(initialId, 'onopen');
 	
 					// Load elements.
 						loadElements(initialSection);
@@ -740,6 +764,9 @@
 								// Unload elements.
 									unloadElements(currentSection);
 	
+								// Event: On Close.
+									doEvent(currentSection.id, 'onclose');
+	
 							// Activate target section.
 	
 								// Show header and/or footer (if necessary).
@@ -764,6 +791,9 @@
 									section.classList.remove('inactive');
 									section.classList.add('active');
 									section.style.display = '';
+	
+								// Event: On Open.
+									doEvent(section.id, 'onopen');
 	
 							// Trigger 'resize' event.
 								trigger('resize');
@@ -2082,32 +2112,52 @@
 		
 				var _this = this,
 					$links = $$('#' + config.id + ' .thumbnail'),
-					navigation = (config.navigation && $links.length > 1),
+					navigation = config.navigation,
 					mobile = config.mobile,
-					i;
+					i, j;
 		
-				// Initialize links.
-					for (i=0; i < $links.length; i++)
-						(function(index) {
-							$links[index].addEventListener('click', function(event) {
+				// Determine if navigation needs to be disabled (despite what our config says).
+					j = 0;
 		
-								// Ignored? Skip.
-									if (this.dataset.lightboxIgnore == '1')
-										return;
+					// Step through items.
+						for (i = 0; i < $links.length; i++) {
 		
-								// Prevent default.
-									event.stopPropagation();
-									event.preventDefault();
+							// Not ignored? Increment count.
+								if ($links[i].dataset.lightboxIgnore != '1')
+									j++;
 		
-								// Show.
-									_this.show(index, {
-										$links: $links,
-										navigation: navigation,
-										mobile: mobile
-									});
+						}
 		
-							});
-						})(i);
+					// Less than two allowed items? Disable navigation.
+						if (j < 2)
+							navigation = false;
+		
+				// Bind click events.
+					for (i=0; i < $links.length; i++) {
+		
+						// Ignored? Skip.
+							if ($links[i].dataset.lightboxIgnore == '1')
+								continue;
+		
+						// Bind click event.
+							(function(index) {
+								$links[index].addEventListener('click', function(event) {
+		
+									// Prevent default.
+										event.stopPropagation();
+										event.preventDefault();
+		
+									// Show.
+										_this.show(index, {
+											$links: $links,
+											navigation: navigation,
+											mobile: mobile
+										});
+		
+								});
+							})(i);
+		
+					}
 		
 			};
 		
@@ -2158,33 +2208,93 @@
 						$modalPrevious = $('#' + this.id + '-modal .previous');
 		
 				// Methods.
-					$modal.show = function(index) {
+					$modal.show = function(index, offset) {
 		
-						var item;
+						var item,
+							i, j, found;
 		
 						// Locked? Bail.
 							if (_this.locked)
 								return;
 		
-						// Check index.
+						// No index provided? Use current.
+							if (typeof index != 'number')
+								index = _this.current;
 		
-							// Less than zero? Jump to end.
-								if (index < 0)
-									index = _this.$links.length - 1;
+						// Offset provided? Find first allowed offset item.
+							if (typeof offset == 'number') {
 		
-							// Greater than length? Jump to beginning.
-								else if (index >= _this.$links.length)
-									index = 0;
+								found = false;
+								j = 0;
 		
-							// Already there? Bail.
-								if (index == _this.current)
-									return;
+								// Step through items using offset (up to item count).
+									for (j = 0; j < _this.$links.length; j++) {
 		
-						// Get item.
-							item = _this.$links.item(index);
+										// Increment index by offset.
+											index += offset;
 		
-							if (!item)
-								return;
+										// Less than zero? Jump to end.
+											if (index < 0)
+												index = _this.$links.length - 1;
+		
+										// Greater than length? Jump to beginning.
+											else if (index >= _this.$links.length)
+												index = 0;
+		
+										// Already there? Bail.
+											if (index == _this.current)
+												break;
+		
+										// Get item.
+											item = _this.$links.item(index);
+		
+											if (!item)
+												break;
+		
+										// Not ignored? Found!
+											if (item.dataset.lightboxIgnore != '1') {
+		
+												found = true;
+												break;
+		
+											}
+		
+									}
+		
+								// Couldn't find an allowed item? Bail.
+									if (!found)
+										return;
+		
+							}
+		
+						// Otherwise, see if requested item is allowed.
+							else {
+		
+								// Check index.
+		
+									// Less than zero? Jump to end.
+										if (index < 0)
+											index = _this.$links.length - 1;
+		
+									// Greater than length? Jump to beginning.
+										else if (index >= _this.$links.length)
+											index = 0;
+		
+									// Already there? Bail.
+										if (index == _this.current)
+											return;
+		
+								// Get item.
+									item = _this.$links.item(index);
+		
+									if (!item)
+										return;
+		
+								// Ignored? Bail.
+									if (item.dataset.lightboxIgnore == '1')
+										return;
+		
+							}
 		
 						// Lock.
 							_this.locked = true;
@@ -2283,11 +2393,11 @@
 					};
 		
 					$modal.next = function() {
-						$modal.show(_this.current + 1);
+						$modal.show(null, 1);
 					};
 		
 					$modal.previous = function() {
-						$modal.show(_this.current - 1);
+						$modal.show(null, -1);
 					};
 		
 					$modal.first = function() {
@@ -2433,77 +2543,34 @@
 		
 			var _lightboxGallery = new lightboxGallery;
 	
-	// Gallery: gallery02.
-		_lightboxGallery.init({
-			id: 'gallery02',
-			navigation: false,
-			mobile: true
-		});
-	
-	// Gallery: gallery01.
-		_lightboxGallery.init({
-			id: 'gallery01',
-			navigation: false,
-			mobile: true
-		});
-	
-	// Gallery: gallery03.
-		_lightboxGallery.init({
-			id: 'gallery03',
-			navigation: false,
-			mobile: true
-		});
-	
-	// Gallery: gallery06.
-		_lightboxGallery.init({
-			id: 'gallery06',
-			navigation: false,
-			mobile: true
-		});
-	
 	// Gallery: gallery07.
 		_lightboxGallery.init({
 			id: 'gallery07',
-			navigation: false,
+			navigation: true,
 			mobile: true
 		});
 	
 	// Gallery: gallery08.
 		_lightboxGallery.init({
 			id: 'gallery08',
-			navigation: false,
+			navigation: true,
 			mobile: true
 		});
 	
 	// "On Visible" animations.
-		onvisible.add('#buttons07', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#buttons06', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#text10', { style: 'tilt-right', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#text06', { style: 'tilt-right', speed: 2000, intensity: 4, delay: 0, state: true, replay: false });
-		onvisible.add('#icons01', { style: 'tilt-left', speed: 2000, intensity: 6, delay: 0, state: true, replay: false });
+		onvisible.add('#text12', { style: 'tilt-right', speed: 2000, intensity: 4, delay: 0, state: true, replay: false });
+		onvisible.add('#icons07', { style: 'tilt-left', speed: 2000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#video01', { style: 'tilt-left', speed: 1000, intensity: 9, delay: 0, state: true, replay: false });
-		onvisible.add('.buttons.style1', { style: 'tilt-right', speed: 2500, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#gallery02', { style: 'tilt-left', speed: 2000, intensity: 7, delay: 0, state: true, replay: false });
+		onvisible.add('.buttons.style1', { style: 'tilt-right', speed: 1500, intensity: 0, delay: 0, state: true, replay: false });
+		onvisible.add('#gallery02', { style: 'fade-left', speed: 2000, intensity: 7, delay: 0, state: true, replay: false });
 		onvisible.add('#video05', { style: 'fade-down', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
 		onvisible.add('#gallery01', { style: 'fade-up', speed: 3000, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#buttons12', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#icons02', { style: 'slide-left', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#buttons10', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#text03', { style: 'fade-down', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#text11', { style: 'tilt-left', speed: 2000, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#icons03', { style: 'tilt-right', speed: 1000, intensity: 6, delay: 0, state: true, replay: false });
-		onvisible.add('#gallery03', { style: 'fade-up', speed: 1000, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#text05', { style: 'fade-down', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#text16', { style: 'tilt-left', speed: 2000, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#gallery04', { style: 'fade-up', speed: 1000, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#text02', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#text14', { style: 'fade-down', speed: 750, intensity: 8, delay: 0, state: true, replay: false });
-		onvisible.add('#text15', { style: 'tilt-right', speed: 2000, intensity: 4, delay: 0, state: true, replay: false });
-		onvisible.add('#image01', { style: 'fade-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#video06', { style: 'fade-down', speed: 500, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#gallery08', { style: 'slide-left', speed: 625, intensity: 10, delay: 0, state: true, replay: false });
-		onvisible.add('#text07', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#text04', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
-		onvisible.add('#text01', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#text08', { style: 'slide-right', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#links01', { style: 'slide-left', speed: 1000, intensity: 5, delay: 0, state: true, replay: false });
+		onvisible.add('#container07', { style: 'fade-up', speed: 1750, intensity: 10, delay: 0, state: true, replay: true });
+		onvisible.add('#sectionCgi', { style: 'fade-up', speed: 1000, intensity: 5, delay: 0, state: true, replay: true });
+		onvisible.add('#sectionFidalgo', { style: 'fade-up', speed: 1000, intensity: 5, delay: 0, state: true, replay: true });
+		onvisible.add('#sectionArt', { style: 'fade-up', speed: 1000, intensity: 5, delay: 0, state: true, replay: true });
 
 })();
